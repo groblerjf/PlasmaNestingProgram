@@ -22,7 +22,7 @@ function varargout = GUI_Interface(varargin)
 
 % Edit the above text to modify the response to help GUI_Interface
 
-% Last Modified by GUIDE v2.5 06-Feb-2014 11:43:59
+% Last Modified by GUIDE v2.5 31-Jan-2015 17:13:44
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -546,3 +546,26 @@ set(handles.mtname, 'String', '')
 set(handles.introname, 'String', '')
 checkStatus(handles);
 %cla reset
+
+
+% --- Executes on selection change in materialSelect.
+function materialSelect_Callback(hObject, eventdata, handles)
+% hObject    handle to materialSelect (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns materialSelect contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from materialSelect
+
+
+% --- Executes during object creation, after setting all properties.
+function materialSelect_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to materialSelect (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
