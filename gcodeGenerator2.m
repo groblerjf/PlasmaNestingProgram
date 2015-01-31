@@ -1,5 +1,11 @@
-function [gcode, ttime, rtime] = gcodeGenerator2(data, part, MT, ttravel, rtravel)
+function [gcode, ttime, rtime] = gcodeGenerator2(data, part, MT, Amps, Material, ttravel, rtravel)
 % This function will generate the gcode for the machine.
+
+
+
+% Set the cutting speed
+[cSpeed, aVol, pHeight, cHeight, pDelay] = PM45CuttingSpeeds(Amps, MT, Material);
+
 
 
 % Creat a file name

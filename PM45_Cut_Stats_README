@@ -1,0 +1,12 @@
+The matrixes contained in this data structure will have the following format.
+
+Format will be the same as the Operators manual for the Powermax 45
+
+
+Column 1 - Arc Current
+Column 2 - Material thickness [mm]
+Column 3 - Torch to work distance [mm]
+Column 4 - Initial Pierce Height [mm]
+Column 5 - Pierce Time Delay [s]
+Column 6 - Cut Speed [mm/min]
+Column 7 - Recommended Arc Voltage [V]
