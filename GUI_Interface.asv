@@ -260,7 +260,7 @@ function genCut_ButtonDownFcn(hObject, eventdata, handles)
     IntroCut = get(handles.introname, 'String');
     Offset = get(handles.offsetname, 'String');
     Current = get(handles.CurrentName, 'String');
-    Material = get(handles.MAterialName, 'String');
+    Material = get(handles.MaterialName, 'String');
     
 
 
@@ -355,16 +355,16 @@ function genCut_ButtonDownFcn(hObject, eventdata, handles)
 
      
      % Just for the fun of it, I am plotting the sequence.
-     xlabel('X-AXIS')
-     ylabel('Y-AXIS')
-     axis([-2 (W+5) -2 (H+5)])
-     hold on
-     cla
-     for i = 1:col
-         pl1 = plot(punte{i}{2}, punte{i}{3}, '-.b');
-         drawnow();
-%          pause(0.5);
-     end
+%      xlabel('X-AXIS')
+%      ylabel('Y-AXIS')
+%      axis([-2 (W+5) -2 (H+5)])
+%      hold on
+%      cla
+%      for i = 1:col
+%          pl1 = plot(punte{i}{2}, punte{i}{3}, '-.b');
+% %          drawnow();
+% %          pause(0.5);
+%      end
      
 %      [FileName1,PathName1,FilterIndex1] = uiputfile('*.mat', 'Save the.mat file');
 %      save([PathName1, FileName1], 'punte');
@@ -463,18 +463,22 @@ function genCut_ButtonDownFcn(hObject, eventdata, handles)
      
      
 	cla
-    
+    % Plot the original part
+    hold on
      for i = 1:col
          pl1 = plot(punte{i}{2} + Sx, punte{i}{3}  + Sy, '-.b');
-         drawnow();
-%          pause(0.5);
+%          drawnow();
+%          pause(1);
      end
+     hold off
+     
+     
      % And now we are plotting the sequnce that will be cut.
      %axis([-2 (W+10) -2 (H+10)])
      hold on
      for i = 1:col
          pl2 = plot(intro_punte{i}{2} + Sx, intro_punte{i}{3} + Sy, 'r');
-         drawnow();
+%          drawnow();
 %          pause(0.5);
      end
      legend([pl1, pl2],'Part', 'Cut Path')
@@ -502,13 +506,14 @@ function genCut_ButtonDownFcn(hObject, eventdata, handles)
      
      % Now we will generate the G-CODE
      %[gcode, ttime, rtime] = gcodeGenerator(intro_punte, file(1:end-4), str2double(MT), ttravel, rtravel);
-     [gcode, ttime, rtime] = gcodeGenerator2(intro_data, file(1:end-4), str2double(MT), str2doulbe(, ttravel, rtravel);
+     [gcode, ttime, rtime] = gcodeGenerator2(intro_data, file(1:end-4), str2double(MT), ...
+            str2double(Current), Material, ttravel, rtravel, handles);
      save partcode.mat gcode intro_punte info
      
-     sec = round((ttime - floor(ttime))*60);
+     sec = ceil((ttime*60 - floor(ttime)*60));
      tstring = [num2str(floor(ttime)), 'min ', num2str(sec), 's'];
      
-     sec = round((rtime - floor(rtime))*60);
+     sec = ceil((rtime*60 - floor(rtime)*60));
      rstring = [num2str(floor(rtime)), 'min ', num2str(sec), 's'];
      
      ttotal = ttime + rtime;
@@ -542,6 +547,11 @@ function checkStatus(handles)
     MT = get(handles.mtname, 'String');
     if isempty(MT)
         go = 0;
+    end
+    
+    if str2double(MT) > 12
+        go = 0;
+        msgbox('Material too thick for piercing. Edge cut is not yet supported');
     end
 
     IntroCut = get(handles.introname, 'String');
