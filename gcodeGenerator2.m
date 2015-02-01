@@ -1,10 +1,10 @@
-function [gcode, ttime, rtime] = gcodeGenerator2(data, part, MT, Amps, Material, ttravel, rtravel)
+function [gcode, ttime, rtime] = gcodeGenerator2(data, part, MT, Amps, Material, ttravel, rtravel, handles)
 % This function will generate the gcode for the machine.
 
 
 
 % Set the cutting speed
-[cSpeed, aVol, pHeight, cHeight, pDelay] = PM45CuttingSpeeds(Amps, MT, Material);
+[cSpeed, aVol, pHeight, cHeight, pDelay] = PM45CuttingSpeeds(Amps, MT, Material, handles);
 
 
 
@@ -28,47 +28,53 @@ fileName = [part '.gcode'];
 CH = 0.2; % The cut height
 
 
-% Create a cell array with the gcode in it
-gcode = [];
-count = 1;
-gcode{count} = '%';
-count = count + 1;
-gcode{count} = ['(', fileName,' - ', num2str(MT), ' mm Plate)'];
-count = count + 1;
-gcode{count} = '(gcode for cutting)';
-count = count + 1;
-gcode{count} = 'G54G90G1X0.0Y0.0F1500';
-count = count + 1;
-
-% Lets plunge the cutter
-gcode{count} = 'G91F300';
-count = count + 1;
-gcode{count} = 'G1Z0.5';
-count = count + 1;
-gcode{count} = 'M3 S100';
-count = count + 1;
-gcode{count} = 'G1Z-0.5F200';
-count = count + 1;
-gcode{count} = 'M5';
-count = count + 1;
-gcode{count} = 'G1Z5F300';
-count = count + 1;
-gcode{count} = 'G1Z-5';
-count = count + 1;
-gcode{count} = 'G90';
-count = count + 1;
-gcode{count} = ['G1Z', num2str(CH + 0.5)];
-count = count + 1;
-
-
 % Cut Feedrate
-feedrate = (round(347.2*exp(-0.5108*MT)))*10;
-ttime = ttravel / feedrate;
+ttime = ttravel / cSpeed;
 
 
 % Rapid Feedrate
 rapid = '2500';
 rtime = rtravel / str2double(rapid);
+
+
+
+
+% Create a cell array with the gcode in it
+gcode = [];
+count = 1;
+gcode{count} = '%';
+count = count + 1;
+
+% First we give some necessary information for the operator
+gcode{count} = ['(', fileName,' - ', num2str(MT), ' mm Plate)'];
+count = count + 1;
+gcode{count} = '(We have the following cut spesifications)';
+count = count + 1;
+gcode{count} = ['(Cutting Speeds is ',  num2str(cSpeed), 'mm/min)'];
+count = count + 1;
+gcode{count} = ['(Cutting Current is ', num2str(Amps), 'A)'];
+count = count + 1;
+gcode{count} = ['(Selected Plate Thickness is', num2str(MT), 'mm)'];
+count = count + 1;
+gcode{count} = ['(Recommended Arc Voltage is', num2str(aVol), 'V )'];
+count = count + 1;
+gcode{count} = ['(Recommended Pierce Height is ', num2str(pHeight), 'mm )'];
+count = count + 1;
+gcode{count} = ['(Recommended Pierce Delay is ', num2str(pDelay), 's )'];
+count = count + 1;
+gcode{count} = ['(Recommended Cut Height is ', num2str(cHeight), 'mm )'];
+count = count + 1;
+gcode{count} = '(gcode for cutting)';
+count = count + 1;
+
+% Position the cutter (Assuming the homing has already been completed)
+gcode{count} = 'G54G90G0X0.0Y0.0Z0.0';
+count = count + 1;
+
+
+
+
+
 
 
 % Inside Code
@@ -95,17 +101,30 @@ for i = 1:col
     end
 
     
-    % Code to start the cutter
-    gcode{count} = 'M3';
-    count = count + 1;
     
     
-    % Plunge the torch for cutting
-    gcode{count} = 'G91F300';
+    % Lets find the plate zero via the THC (Arduino)
+    gcode{count} = 'M07';       % Trigger zero sensing
     count = count + 1;
-    gcode{count} = 'G1Z-0.5';
-    count = count+1;
-    gcode{count} = ['G90' 'F' num2str(feedrate)];
+    gcode{count} = 'M00';       % Stop machine motion
+    count = count + 1;
+
+    % The THC now finds the plate zero. Once the zero is found, the THC will
+    % send a Cycle Start signal to LinuxCNC
+
+    gcode{count} = ['G91G0Z', num2str(pHeight)]; % Postion the torch to the pierce height
+    count = count + 1;
+    gcode{count} = 'M3';        % Signal the THC to start the arc
+    count = count + 1;
+    gcode{count} = 'M00';       % Stop all motion and wait for Arc OK signal
+    count = count + 1;
+    gcode{count} = ['G4P', num2str(pDelay*1000)];   % Delay to pierce the material
+    count = count + 1;
+    gcode{count} = ['G0Z', num2str(cHeight - pHeight, 2)]; % Quickly plunge to cut height
+    count = count + 1;
+
+    % Set the cutting speed and change back to absolute coordinates.
+    gcode{count} = ['G90' 'F' num2str(cSpeed)];
     count = count + 1;
     
    
