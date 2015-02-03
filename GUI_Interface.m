@@ -463,6 +463,7 @@ function genCut_ButtonDownFcn(hObject, eventdata, handles)
      
      
 	cla
+    % Plot the original part
     hold on
      for i = 1:col
          pl1 = plot(punte{i}{2} + Sx, punte{i}{3}  + Sy, '-.b');
@@ -470,6 +471,8 @@ function genCut_ButtonDownFcn(hObject, eventdata, handles)
 %          pause(1);
      end
      hold off
+     
+     
      % And now we are plotting the sequnce that will be cut.
      %axis([-2 (W+10) -2 (H+10)])
      hold on

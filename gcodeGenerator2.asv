@@ -101,33 +101,19 @@ for i = 1:col
     end
 
     
+    % Set the cutting speed and change back to absolute coordinates.
+    gcode{count} = ['G90' 'F' num2str(cSpeed)];
+    count = count + 1;
     
     
     % Lets find the plate zero via the THC (Arduino)
-    gcode{count} = 'M07';       % Trigger zero sensing
-    count = count + 1;
-    gcode{count} = 'M00';       % Stop machine motion
+    gcode{count} = 'M3';       % Trigger the cutting process
     count = count + 1;
 
     % The THC now finds the plate zero. Once the zero is found, the THC will
     % send a Cycle Start signal to LinuxCNC
 
-    gcode{count} = ['G91G0Z', num2str(pHeight)]; % Postion the torch to the pierce height
-    count = count + 1;
-    gcode{count} = 'M3';        % Signal the THC to start the arc
-    count = count + 1;
-    gcode{count} = 'M00';       % Stop all motion and wait for Arc OK signal
-    count = count + 1;
-    gcode{count} = ['G4P', num2str(pDelay*1000)];   % Delay to pierce the material
-    count = count + 1;
-    gcode{count} = ['G0Z', num2str(cHeight - pHeight, 2)]; % Quickly plunge to cut height
-    count = count + 1;
-
-    % Set the cutting speed and change back to absolute coordinates.
-    gcode{count} = ['G90' 'F' num2str(cSpeed)];
-    count = count + 1;
-    
-   
+       
     % For loop for the data points
     for j = 2:cols
         if strcmp(data{i}{j}{2}, 'LINE')
