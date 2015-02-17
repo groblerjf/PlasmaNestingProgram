@@ -14,7 +14,11 @@ clc;
 [~, col] = size(punte);
 blocks = col;
 
-MT = 3;
+if MT < 2
+    MT = 2;
+elseif MT > 4
+    MT = 4;
+end
 
 % -------------------------------------------------------------------------
 % Lets create those polygon vectors for the last two points and calculate

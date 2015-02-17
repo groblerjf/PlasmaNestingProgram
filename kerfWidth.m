@@ -13,7 +13,7 @@ function [kerf_added, tmp_data] = kerfWidth(MT, punte, data, Offset)
 % so I took a geuse of some kerf width for an 8 mm plate and used that
 % thrid point to determine a new formula for the kerf width.
 
-width = 1.326*exp(0.1047*MT);
+width = 1; % This is the with for the Hypertherm Powermax 45
 
 t_offset = Offset + 0.5*width;
 

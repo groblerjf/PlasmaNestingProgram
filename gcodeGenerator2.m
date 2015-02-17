@@ -50,19 +50,19 @@ gcode{count} = ['(', fileName,' - ', num2str(MT), ' mm Plate)'];
 count = count + 1;
 gcode{count} = '(We have the following cut spesifications)';
 count = count + 1;
-gcode{count} = ['(Cutting Speeds is ',  num2str(cSpeed), 'mm/min)'];
+gcode{count} = ['(Cutting Speeds is:            ',  num2str(cSpeed), 'mm/min)'];
 count = count + 1;
-gcode{count} = ['(Cutting Current is ', num2str(Amps), 'A)'];
+gcode{count} = ['(Cutting Current is:           ', num2str(Amps), 'A)'];
 count = count + 1;
-gcode{count} = ['(Selected Plate Thickness is', num2str(MT), 'mm)'];
+gcode{count} = ['(Selected Plate Thickness is:  ', num2str(MT), 'mm)'];
 count = count + 1;
-gcode{count} = ['(Recommended Arc Voltage is', num2str(aVol), 'V )'];
+gcode{count} = ['(Recommended Arc Voltage is:   ', num2str(aVol), 'V )'];
 count = count + 1;
-gcode{count} = ['(Recommended Pierce Height is ', num2str(pHeight), 'mm )'];
+gcode{count} = ['(Recommended Pierce Height is: ', num2str(pHeight), 'mm )'];
 count = count + 1;
-gcode{count} = ['(Recommended Pierce Delay is ', num2str(pDelay), 's )'];
+gcode{count} = ['(Recommended Pierce Delay is:  ', num2str(pDelay), 's )'];
 count = count + 1;
-gcode{count} = ['(Recommended Cut Height is ', num2str(cHeight), 'mm )'];
+gcode{count} = ['(Recommended Cut Height is:    ', num2str(cHeight), 'mm )'];
 count = count + 1;
 gcode{count} = '(gcode for cutting)';
 count = count + 1;
@@ -129,6 +129,10 @@ for i = 1:col
                 end
             end
             
+            % Set the cutting speed
+            gcode{count} = ['F' num2str(cSpeed)];
+            count = count + 1;
+            
             gcode{count} = ['G1', 'X', num2str(data{i}{j}{5}), 'Y', num2str(data{i}{j}{6})];
             count = count + 1;
         elseif strcmp(data{i}{j}{2}, 'ARC')
@@ -143,6 +147,10 @@ for i = 1:col
             
             icom = data{i}{j}{9} - data{i}{j}{3};
             jcom = data{i}{j}{10} - data{i}{j}{4};
+            
+            % Set the cutting speed
+            gcode{count} = ['F' num2str(0.75*cSpeed)];
+            count = count + 1;
             
             x_start = data{i}{j}{3};
             y_start = data{i}{j}{4}; 
@@ -160,6 +168,10 @@ for i = 1:col
                 arc_d = 'G3';
             end
             
+            % Set the cutting speed
+            gcode{count} = ['F' num2str(0.75*cSpeed)];
+            count = count + 1;
+            
             x_start = data{i}{j}{3} + r;
             y_start = data{i}{j}{4}; 
             gcode{count} = ['G1', 'X', num2str(x_start), 'Y', num2str(y_start)];
@@ -175,21 +187,10 @@ for i = 1:col
     % Lift up the torch again
     gcode{count} = 'M5';
     count = count + 1;
-    gcode{count} = 'G91F300';
-    count = count + 1;
-    gcode{count} = 'G1Z0.5';
-    count = count + 1;
-    gcode{count} = 'G90';
-    count = count + 1; 
+
 end
 
 gcode{count} = 'G0X0Y0';
-count = count + 1;
-gcode{count} = 'G91F300';
-count = count + 1;
-gcode{count} = 'G1Z5';
-count = count + 1;
-gcode{count} = 'G90';
 count = count + 1;
 gcode{count} = '%';
 

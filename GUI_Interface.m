@@ -420,7 +420,8 @@ function genCut_ButtonDownFcn(hObject, eventdata, handles)
          end % End of for-loop
      end % End of for-loop
      
-     
+     intro_data
+        
      % The following function will determine more information about the cut
      % for the user. Things like cutting time rapid time and so forth
 
